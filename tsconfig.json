@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "lib": [
+      "ES2024",
+      "ESNext.Array",
+      "ESNext.Collection",
+      "ESNext.Promise",
+      "DOM",
+    ],
+    "types": ["node"],
+    "module": "nodenext",
+    "target": "es2024",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node16",
+    "forceConsistentCasingInFileNames": true,
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+  },
+  "include": ["src/**/*", "public"],
+  "exclude": ["node_modules", "dist"],
+}

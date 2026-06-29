@@ -1,0 +1,30 @@
+{
+  "name": "vending-machine",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/flovrian/vending-machine#readme",
+  "bugs": {
+    "url": "https://github.com/flovrian/vending-machine/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flovrian/vending-machine.git"
+  },
+  "license": "ISC",
+  "author": "fschwertzel",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "start": "tsc && node dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "tsx": "^4.22.4"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.5.2",
+    "dotenv": "^17.4.2",
+    "winston": "^3.19.0"
+  }
+}

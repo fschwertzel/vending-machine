@@ -4,15 +4,17 @@ import { LanguageProcessor } from "../utils/LanguageProcessor.ts";
 import { getLogger } from "../index.ts";
 
 const VENDING_MACHINE_THEME = { prefix: "𖠌 :" };
-const GRAB_PRODUCT_ASCII = `   |  |┌─────────────┐|
-   |  |│![] [] [] [] │|
-   |  |::l三三三三三!.|
-   |  |│![] [] [] [] │|
-   |  |::l三三三三三!.|
-   |  |┌─────────────┐|
-   |  |│＿＿_ ∧∧
-   {二二}￣￣⊂(  ⌒ヽ
-          ∪(＿つつ `;
+const WELCOME_ASCII = `
+  　　　|　　|┌─────────────┐|
+  　　　|　　|│![] [] [] [] │|
+  　　　|　　|::l三三三三三!.|
+  　　　|　　|│![] [] [] [] │|
+  　　　|　　|::l三三三三三!.|
+  　　　|　　|┌─────────────┐|　いらっしゃいませ！　  /ヽ,/ヽ
+  　　　|　　|│＿＿_＿＿_＿＿_│ 　 　　              (　　  ）　こんにちは!
+  　　　{二二}￣￣￣￣￣￣￣￣　　　　　　　　　　　 と 　  i
+  　　　　　　　　　　　　　　　　　　　　　　      　 しーJ
+`;
 
 export class VendingMachine {
   private languageProcessor: LanguageProcessor = new LanguageProcessor();
@@ -35,7 +37,10 @@ export class VendingMachine {
     )
       .then((res) => {
         this.languageProcessor.setUserLanguage(res);
-        console.log(this.languageProcessor.getTranslation("welcome.message"));
+        console.log(
+          `${WELCOME_ASCII}\n𖠌 : ` +
+            this.languageProcessor.getTranslation("welcome.message"),
+        );
         this.fetchUserName();
       })
       .catch((e) => {

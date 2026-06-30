@@ -1,7 +1,14 @@
 import { input } from "@inquirer/prompts";
 import { select } from "@inquirer/prompts";
-import { getLanguageProcessor, getLogger } from "../index.ts";
-import { validateUsername } from "./Authentication.ts";
+import { getLanguageHandler, getLogger } from "../index.ts";
+import {
+  getUserData,
+  validateUsername,
+} from "../handlers/AuthenticationHandler.ts";
+import {
+  insertUserData,
+  selectUserData,
+} from "../db/queries/Authentication.ts";
 
 const VENDING_MACHINE_THEME = { prefix: "𖠌 :" };
 const WELCOME_ASCII = `
@@ -17,8 +24,10 @@ const WELCOME_ASCII = `
 `;
 
 export class VendingMachine {
-  constructor() {
-    this.selectLanguage();
+  public static async create(): Promise<VendingMachine> {
+    const vm = new VendingMachine();
+    await vm.selectLanguage();
+    return vm;
   }
 
   public async selectLanguage(): Promise<void> {
@@ -34,10 +43,10 @@ export class VendingMachine {
         },
         { clearPromptOnDone: true },
       );
-      getLanguageProcessor().setUserLanguage(selectedLanguage);
+      getLanguageHandler().setUserLanguage(selectedLanguage);
       console.log(
         `${WELCOME_ASCII}\n𖠌 : ` +
-          getLanguageProcessor().getTranslation("welcome.message"),
+          getLanguageHandler().getTranslation("welcome.message"),
       );
       await this.fetchUserName();
     } catch (e) {
@@ -54,7 +63,7 @@ export class VendingMachine {
   public async fetchUserName(): Promise<void> {
     const username = await input(
       {
-        message: getLanguageProcessor().getTranslation("auth.prompt"),
+        message: getLanguageHandler().getTranslation("auth.prompt"),
         theme: VENDING_MACHINE_THEME,
         required: true,
         default: "morinawa_mikuri",
@@ -72,6 +81,7 @@ export class VendingMachine {
       });
       throw err;
     });
-    console.log(username);
+    const userData = getUserData(username);
+    console.log(userData);
   }
 }

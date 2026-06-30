@@ -4,7 +4,7 @@ import path from "path";
 
 const AVAILABLE_LANGUAGES = { en: true, jp: true };
 
-export class LanguageProcessor {
+export class LanguageHandler {
   private selectedLanguage: string = "en";
   private languageKeyCache: Map<string, Map<string, string>> = new Map<
     string,

@@ -1,7 +1,8 @@
 import "dotenv/config";
 import winston, { Logger } from "winston";
 import { VendingMachine } from "./utils/VendingMachine.ts";
-import { LanguageProcessor } from "./utils/LanguageProcessor.ts";
+import { LanguageHandler } from "./handlers/LanguageHandler.ts";
+import { DatabaseInterface } from "./db/DatabaseInterface.ts";
 
 const LOGGER = winston.createLogger({
   level: "info",
@@ -9,23 +10,28 @@ const LOGGER = winston.createLogger({
   defaultMeta: { service: "user-service" },
   transports: [
     new winston.transports.File({
-      filename: "runtime_errors.log",
+      filename: "logs/runtime_errors.log",
       level: "error",
     }),
     new winston.transports.File({
-      filename: "runtime_information.log",
+      filename: "logs/runtime_information.log",
       level: "info",
     }),
+    new winston.transports.File({ filename: "logs/db.log", level: "info" }),
   ],
 });
-const LANGUAGE_PROCESSOR = new LanguageProcessor();
-
 export function getLogger(): Logger {
   return LOGGER;
 }
 
-export function getLanguageProcessor(): LanguageProcessor {
+const LANGUAGE_PROCESSOR = new LanguageHandler();
+export function getLanguageHandler(): LanguageHandler {
   return LANGUAGE_PROCESSOR;
 }
 
-new VendingMachine();
+const DATABASE_INTERFACE = new DatabaseInterface();
+export function getDatabaseInterface() {
+  return DATABASE_INTERFACE;
+}
+
+VendingMachine.create();

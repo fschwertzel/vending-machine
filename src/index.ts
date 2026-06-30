@@ -1,6 +1,7 @@
 import "dotenv/config";
 import winston, { Logger } from "winston";
 import { VendingMachine } from "./utils/VendingMachine.ts";
+import { LanguageProcessor } from "./utils/LanguageProcessor.ts";
 
 const LOGGER = winston.createLogger({
   level: "info",
@@ -17,9 +18,14 @@ const LOGGER = winston.createLogger({
     }),
   ],
 });
+const LANGUAGE_PROCESSOR = new LanguageProcessor();
 
 export function getLogger(): Logger {
   return LOGGER;
+}
+
+export function getLanguageProcessor(): LanguageProcessor {
+  return LANGUAGE_PROCESSOR;
 }
 
 new VendingMachine();

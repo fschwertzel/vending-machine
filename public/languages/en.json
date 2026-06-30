@@ -1,4 +1,6 @@
 {
   "welcome.message": "Welcome! I'm Toka, your vending machine.(≧▽≦)",
-  "login.message": "Maybe I rememeber you, what's your username?"
+  "auth.prompt": "Maybe I rememeber you, what's your username?",
+  "auth.username.invalid": "I'm really sorry, but my system doesn't accept that username..\n Please try using only letters, numbers, or underscores (๑￫ܫ￩)",
+  "auth.username.length": "It seems like that username is too short or long for my system..\n Please try keeping it between 2 and 16 letters long 。゜゜(´Ｏ`) ゜゜。"
 }

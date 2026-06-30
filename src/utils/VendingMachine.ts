@@ -1,7 +1,7 @@
 import { input } from "@inquirer/prompts";
 import { select } from "@inquirer/prompts";
-import { LanguageProcessor } from "../utils/LanguageProcessor.ts";
-import { getLogger } from "../index.ts";
+import { getLanguageProcessor, getLogger } from "../index.ts";
+import { validateUsername } from "./Authentication.ts";
 
 const VENDING_MACHINE_THEME = { prefix: "𖠌 :" };
 const WELCOME_ASCII = `
@@ -17,48 +17,50 @@ const WELCOME_ASCII = `
 `;
 
 export class VendingMachine {
-  private languageProcessor: LanguageProcessor = new LanguageProcessor();
   constructor() {
     this.selectLanguage();
-    this.fetchUserName();
   }
 
   public async selectLanguage(): Promise<void> {
-    await select(
-      {
-        message: "Select a language",
-        choices: [
-          { name: "English", value: "en" },
-          { name: "日本語", value: "jp" },
-        ],
-        theme: VENDING_MACHINE_THEME,
-      },
-      { clearPromptOnDone: true },
-    )
-      .then((res) => {
-        this.languageProcessor.setUserLanguage(res);
-        console.log(
-          `${WELCOME_ASCII}\n𖠌 : ` +
-            this.languageProcessor.getTranslation("welcome.message"),
-        );
-        this.fetchUserName();
-      })
-      .catch((e) => {
-        const err = new Error(`Failed to set the user's language: ${e}`);
-        getLogger().log({
-          level: "error",
-          message: err.message,
-          exitOnError: true,
-        });
-        throw err;
+    try {
+      const selectedLanguage = await select(
+        {
+          message: "Select a language",
+          choices: [
+            { name: "English", value: "en" },
+            { name: "日本語", value: "jp" },
+          ],
+          theme: VENDING_MACHINE_THEME,
+        },
+        { clearPromptOnDone: true },
+      );
+      getLanguageProcessor().setUserLanguage(selectedLanguage);
+      console.log(
+        `${WELCOME_ASCII}\n𖠌 : ` +
+          getLanguageProcessor().getTranslation("welcome.message"),
+      );
+      await this.fetchUserName();
+    } catch (e) {
+      const err = new Error(`Failed to set the user's language: ${e}`);
+      getLogger().log({
+        level: "error",
+        message: err.message,
+        exitOnError: true,
       });
+      throw err;
+    }
   }
 
   public async fetchUserName(): Promise<void> {
-    const userName = await input(
+    const username = await input(
       {
-        message: this.languageProcessor.getTranslation("login.message"),
+        message: getLanguageProcessor().getTranslation("auth.prompt"),
         theme: VENDING_MACHINE_THEME,
+        required: true,
+        default: "morinawa_mikuri",
+        validate: function (userInput) {
+          return validateUsername(userInput);
+        },
       },
       { clearPromptOnDone: true },
     ).catch((e) => {
@@ -70,6 +72,6 @@ export class VendingMachine {
       });
       throw err;
     });
-    console.log(userName);
+    console.log(username);
   }
 }

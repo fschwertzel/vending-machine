@@ -4,7 +4,6 @@ import { getLogger } from "../index.ts";
 
 export class DatabaseInterface {
   private db: Database.Database;
-
   constructor() {
     try {
       this.db = new Database(
@@ -15,7 +14,8 @@ export class DatabaseInterface {
           timeout: 5000,
         },
       );
-      this.db.pragma("journal_mode = WAL");
+      this.db.pragma("journal_mode = WAL;");
+      this.db.pragma("foreign_keys = ON;");
       this.createDatabaseSchema();
     } catch (e) {
       const err = new Error(`Failed to initiate database interface: ${e}`);
@@ -37,12 +37,12 @@ export class DatabaseInterface {
       );`,
       `CREATE TABLE IF NOT EXISTS user_balances (
         balance_id INTEGER PRIMARY KEY AUTOINCREMENT ,
-        user_id INTEGER NOT NULL REFERENCES user_data(user_id),
-        balance INTEGER DEFAULT 0 NOT NULL
+        user_id INTEGER NOT NULL UNIQUE REFERENCES user_data(user_id),
+        balance INTEGER DEFAULT 10000 NOT NULL
       );`,
       `CREATE TABLE IF NOT EXISTS user_statistics (
         statistic_id INTEGER PRIMARY KEY AUTOINCREMENT ,
-        user_id INTEGER NOT NULL REFERENCES user_data(user_id),
+        user_id INTEGER NOT NULL UNIQUE REFERENCES user_data(user_id),
         product_amount INTEGER DEFAULT 0 NOT NULL,
         spent_amount INTEGER DEFAULT 0 NOT NULL
       );`,
@@ -52,16 +52,27 @@ export class DatabaseInterface {
         product_description VARCHAR(256) NOT NULL,
         stock_amount INTEGER DEFAULT 0 NOT NULL
       );`,
-      `CREATE TABLE IF NOT EXISTS shopping_cards (
+      `CREATE TABLE IF NOT EXISTS shopping_carts (
         card_id INTEGER PRIMARY KEY AUTOINCREMENT ,
         user_id INTEGER NOT NULL REFERENCES user_data(user_id),
         product_id INTEGER  NOT NULL REFERENCES product_data(product_id),
-        amount INTEGER NOT NULL DEFAULT 1
+        amount INTEGER NOT NULL DEFAULT 1,
+        UNIQUE (user_id, product_id)
       );`,
-    ].map((sql) => this.db.prepare(sql));
+      `
+      CREATE TRIGGER IF NOT EXISTS create_user_defaults
+      AFTER INSERT ON user_data
+      BEGIN
+          INSERT INTO user_balances (user_id)
+          VALUES (NEW.user_id);
+          INSERT INTO user_statistics (user_id)
+          VALUES (NEW.user_id);
+      END;
+      `,
+    ];
     this.db.transaction(() => {
-      for (const stmt of statements) {
-        stmt.run();
+      for (const sql of statements) {
+        this.db.prepare(sql).run();
       }
     })();
   }

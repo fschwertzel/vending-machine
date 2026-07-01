@@ -5,10 +5,7 @@ import {
   getUserData,
   validateUsername,
 } from "../handlers/AuthenticationHandler.ts";
-import {
-  insertUserData,
-  selectUserData,
-} from "../db/queries/Authentication.ts";
+import { User } from "./User.js";
 
 const VENDING_MACHINE_THEME = { prefix: "𖠌 :" };
 const WELCOME_ASCII = `
@@ -24,13 +21,15 @@ const WELCOME_ASCII = `
 `;
 
 export class VendingMachine {
+  currentUser: User | undefined = undefined;
+
   public static async create(): Promise<VendingMachine> {
     const vm = new VendingMachine();
     await vm.selectLanguage();
     return vm;
   }
 
-  public async selectLanguage(): Promise<void> {
+  private async selectLanguage(): Promise<void> {
     try {
       const selectedLanguage = await select(
         {
@@ -48,7 +47,7 @@ export class VendingMachine {
         `${WELCOME_ASCII}\n𖠌 : ` +
           getLanguageHandler().getTranslation("welcome.message"),
       );
-      await this.fetchUserName();
+      await this.selectUser();
     } catch (e) {
       const err = new Error(`Failed to set the user's language: ${e}`);
       getLogger().log({
@@ -60,7 +59,7 @@ export class VendingMachine {
     }
   }
 
-  public async fetchUserName(): Promise<void> {
+  private async selectUser(): Promise<void> {
     const username = await input(
       {
         message: getLanguageHandler().getTranslation("auth.prompt"),
@@ -81,7 +80,11 @@ export class VendingMachine {
       });
       throw err;
     });
-    const userData = getUserData(username);
-    console.log(userData);
+    this.currentUser = new User(getUserData(username));
+    await this.displayStartMenu();
+  }
+
+  private async displayStartMenu() {
+    console.log(`Welcome, ${this.currentUser?.getUsername().toString()}`);
   }
 }

@@ -6,6 +6,12 @@
   "auth.username.length": "It seems like that username is too short or long for my system..\n Please try keeping it between 2 and 16 letters long 。゜゜(´Ｏ`) ゜゜。",
   "menu.start.prompt_m": "Gooood morning %, what'd you like to do today?? ヽ(・∀・)ﾉ There is so many options!!! ＼(≧▽≦)／",
   "menu.start.prompt_a": "Good afternoon %, what do you have on your mind??? (•⩊•) Just choose something!!!! ⸜( ´ ꒳ ` )⸝ ",
-  "menu.start.prompt_e": "Good evening %, are you sleepy yet?? ≧☉_☉≦I hope not. (￣_￣)・・・ Lets buy some snacks!! ( `ω´ )",
-  "menu.start.option.balance": "Manage your balance"
+  "menu.start.prompt_e": "Good evening %, are you sleepy yet?? ≧☉_☉≦ I hope not. (￣_￣)・・・ Lets buy some snacks!! ( `ω´ )",
+  "menu.start.option.balance": "Manage your balance",
+
+  "menu.balance.prompt": "Hii Hi, you have a whopping total of ¥% sitting here right with me, spend them or take them back?!",
+  "menu.start.option.topup": "Top up your balance",
+  "menu.start.option.topup.prompt": "How much ¥ would you like to top up?",
+  "menu.start.option.withdraw": "Withdraw from your balance",
+  "menu.start.option.withdraw.prompt": "How much ¥ would you like to withdraw?"
 }

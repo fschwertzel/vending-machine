@@ -6,6 +6,12 @@
   "auth.username.length": "そのユーザー名は、私のシステムでは短すぎるか長すぎるよう…\n 2文字から16文字の範囲内に収まるようにしてください 。゜゜(´Ｏ`) ゜゜。",
   "menu.start.prompt_m": "おはよう～ %、今日は何したい？？ ヽ(・∀・)ﾉ せんたくしがいっぱいあるね！！！ ＼(≧▽≦)／",
   "menu.start.prompt_a": "%くん、こんにちは。何か気になることはある？？？ (•⩊•) 何か選んでみてください！！！！ ⸜( ´ ꒳ ` )⸝",
-  "menu.start.prompt_e": "こんばんは、%くん。もう眠くなってきた？≧☉_☉≦ そうじゃないといいな。(￣_￣)・・・ おやつを買おうよ！！( `ω´ )",
-  "menu.start.option.balance": "残高を管理する"
+  "menu.start.prompt_e": "こんばんは、%くん。もう眠くなってきた？≧☉_☉≦ そうじゃないといいな。 (￣_￣)・・・ おやつを買おうよ！！( `ω´ )",
+  "menu.start.option.balance": "残高を管理する",
+
+  "menu.balance.prompt": "やあやあ、ここになんと¥%もあなたのお金があるよ、使うか、それとも返してもらうか？！",
+  "menu.start.option.topup": "残高をチャージする",
+  "menu.start.option.topup.prompt": "いくら（円）チャージしますか？",
+  "menu.start.option.withdraw": "残高から引き出す",
+  "menu.start.option.withdraw.prompt": "いくら（円）を引き出しますか？"
 }

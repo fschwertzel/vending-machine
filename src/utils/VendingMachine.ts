@@ -6,12 +6,10 @@ import {
   validateUsername,
 } from "../handlers/AuthenticationHandler.ts";
 import { User } from "./User.ts";
+import { displayStartMenu } from "../menus/StartMenu.ts";
 
-const VENDING_MACHINE_THEME = { prefix: "𖠌 :" };
-
-const START_MENU_OPTIONS = {
-  BALANCE: 0,
-};
+export const VENDING_MACHINE_THEME = { prefix: "𖠌 :" };
+const CLEAR_CODE = "\u001b[2J\u001b[0;0H\n";
 
 export class VendingMachine {
   currentUser: User | undefined = undefined;
@@ -36,11 +34,6 @@ export class VendingMachine {
         { clearPromptOnDone: true },
       );
       getLanguageHandler().setUserLanguage(selectedLanguage);
-      console.log(
-        getLanguageHandler().getTranslation("welcome.ascii") +
-          "\n𖠌 : " +
-          getLanguageHandler().getTranslation("welcome.message"),
-      );
       await this.selectUser();
     } catch (e) {
       const err = new Error(`Failed to set the user's language: ${e}`);
@@ -54,9 +47,15 @@ export class VendingMachine {
   }
 
   private async selectUser(): Promise<void> {
+    const languageHandler = getLanguageHandler();
+    console.log(
+      languageHandler.getTranslation("welcome.ascii") +
+        "\n𖠌 : " +
+        languageHandler.getTranslation("welcome.message"),
+    );
     const username = await input(
       {
-        message: getLanguageHandler().getTranslation("auth.prompt"),
+        message: languageHandler.getTranslation("auth.prompt"),
         theme: VENDING_MACHINE_THEME,
         required: true,
         default: "morinawa_mikuri",
@@ -74,11 +73,12 @@ export class VendingMachine {
       });
       throw err;
     });
+    process.stdout.write(CLEAR_CODE);
     this.currentUser = new User(getUserData(username));
-    await this.displayStartMenu();
+    await displayStartMenu(this);
   }
 
-  private getUser(): User {
+  public getUser(): User {
     if (this.currentUser !== undefined) {
       return this.currentUser;
     }
@@ -90,38 +90,4 @@ export class VendingMachine {
     });
     throw err;
   }
-
-  private async displayStartMenu() {
-    const languageHandler = getLanguageHandler();
-    const selectedOption = await select(
-      {
-        message: languageHandler.getTranslation(
-          "menu.start.prompt",
-          [this.getUser().getUsername()],
-          true,
-        ),
-        choices: [
-          {
-            name: languageHandler.getTranslation("menu.start.option.balance"),
-            value: START_MENU_OPTIONS.BALANCE,
-          },
-        ],
-        theme: VENDING_MACHINE_THEME,
-      },
-      { clearPromptOnDone: true },
-    );
-  }
-
-  private async handleUserChoice(choice: number) {
-    switch (choice) {
-      case START_MENU_OPTIONS.BALANCE:
-        await this.displayBalanceMenu();
-        break;
-      default:
-        this.displayBalanceMenu();
-        break;
-    }
-  }
-
-  private async displayBalanceMenu() {}
 }

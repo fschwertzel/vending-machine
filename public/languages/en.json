@@ -1,6 +1,11 @@
 {
+  "welcome.ascii": "  　　　|　　|┌─────────────┐|\n  　　　|　　|│![] [] [] [] │|\n  　　　|　　|::l三三三三三!.|\n  　　　|　　|│![] [] [] [] │|\n  　　　|　　|::l三三三三三!.|\n  　　　|　　|┌─────────────┐|　Welcome!!!!         　/ヽ,/ヽ\n  　　　|　　|│＿＿_＿＿_＿＿_│ 　 　　              (　　  ）　Hello!!\n  　　　{二二}￣￣￣￣￣￣￣￣　　　　　　　　　　　 と 　  i\n  　　　　　　　　　　　　　　　　　　　　　　      　 しーJ",
   "welcome.message": "Welcome! I'm Toka, your vending machine.(≧▽≦)",
   "auth.prompt": "Maybe I rememeber you, what's your username?",
   "auth.username.invalid": "I'm really sorry, but my system doesn't accept that username..\n Please try using only letters, numbers, or underscores (๑￫ܫ￩)",
-  "auth.username.length": "It seems like that username is too short or long for my system..\n Please try keeping it between 2 and 16 letters long 。゜゜(´Ｏ`) ゜゜。"
+  "auth.username.length": "It seems like that username is too short or long for my system..\n Please try keeping it between 2 and 16 letters long 。゜゜(´Ｏ`) ゜゜。",
+  "menu.start.prompt_m": "Gooood morning %, what'd you like to do today?? ヽ(・∀・)ﾉ There is so many options!!! ＼(≧▽≦)／",
+  "menu.start.prompt_a": "Good afternoon %, what do you have on your mind??? (•⩊•) Just choose something!!!! ⸜( ´ ꒳ ` )⸝ ",
+  "menu.start.prompt_e": "Good evening %, are you sleepy yet?? ≧☉_☉≦I hope not. (￣_￣)・・・ Lets buy some snacks!! ( `ω´ )",
+  "menu.start.option.balance": "Manage your balance"
 }

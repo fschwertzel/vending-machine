@@ -23,7 +23,11 @@ export class LanguageHandler {
     return this.selectedLanguage;
   }
 
-  public getTranslation(languageKey: string): string {
+  public getTranslation(
+    languageKey: string,
+    inserts: Array<string> = [],
+    time_based: boolean = false,
+  ): string {
     const languageCache = this.languageKeyCache.get(this.selectedLanguage);
     if (languageCache === undefined) {
       const err = new Error(
@@ -36,6 +40,9 @@ export class LanguageHandler {
       });
       throw err;
     }
+    if (time_based) {
+      languageKey += `_${this.getCurrentDaytimeChar()}`;
+    }
     const translation = languageCache.get(languageKey);
     if (translation === undefined) {
       const err = new Error(`Failed to locate language key: ${languageKey}`);
@@ -46,7 +53,11 @@ export class LanguageHandler {
       });
       throw err;
     }
-    return translation;
+    if (inserts.length === 0) {
+      return translation;
+    }
+    let pos = 0;
+    return translation.replace(/%/g, () => inserts[pos++] ?? "-");
   }
 
   private loadLanguageKeys() {
@@ -71,5 +82,15 @@ export class LanguageHandler {
         });
       }
     });
+  }
+
+  private getCurrentDaytimeChar(): string {
+    const hours = new Date().getHours();
+    if (hours >= 4 && hours < 12) {
+      return "m";
+    } else if (hours >= 12 && hours < 17) {
+      return "a";
+    }
+    return "e";
   }
 }

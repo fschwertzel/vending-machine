@@ -5,20 +5,13 @@ import {
   getUserData,
   validateUsername,
 } from "../handlers/AuthenticationHandler.ts";
-import { User } from "./User.js";
+import { User } from "./User.ts";
 
 const VENDING_MACHINE_THEME = { prefix: "𖠌 :" };
-const WELCOME_ASCII = `
-  　　　|　　|┌─────────────┐|
-  　　　|　　|│![] [] [] [] │|
-  　　　|　　|::l三三三三三!.|
-  　　　|　　|│![] [] [] [] │|
-  　　　|　　|::l三三三三三!.|
-  　　　|　　|┌─────────────┐|　いらっしゃいませ！　  /ヽ,/ヽ
-  　　　|　　|│＿＿_＿＿_＿＿_│ 　 　　              (　　  ）　こんにちは!
-  　　　{二二}￣￣￣￣￣￣￣￣　　　　　　　　　　　 と 　  i
-  　　　　　　　　　　　　　　　　　　　　　　      　 しーJ
-`;
+
+const START_MENU_OPTIONS = {
+  BALANCE: 0,
+};
 
 export class VendingMachine {
   currentUser: User | undefined = undefined;
@@ -44,7 +37,8 @@ export class VendingMachine {
       );
       getLanguageHandler().setUserLanguage(selectedLanguage);
       console.log(
-        `${WELCOME_ASCII}\n𖠌 : ` +
+        getLanguageHandler().getTranslation("welcome.ascii") +
+          "\n𖠌 : " +
           getLanguageHandler().getTranslation("welcome.message"),
       );
       await this.selectUser();
@@ -84,7 +78,50 @@ export class VendingMachine {
     await this.displayStartMenu();
   }
 
-  private async displayStartMenu() {
-    console.log(`Welcome, ${this.currentUser?.getUsername().toString()}`);
+  private getUser(): User {
+    if (this.currentUser !== undefined) {
+      return this.currentUser;
+    }
+    const err = new Error(`Failed to fetch the current user.`);
+    getLogger().log({
+      level: "error",
+      message: err.message,
+      exitOnError: true,
+    });
+    throw err;
   }
+
+  private async displayStartMenu() {
+    const languageHandler = getLanguageHandler();
+    const selectedOption = await select(
+      {
+        message: languageHandler.getTranslation(
+          "menu.start.prompt",
+          [this.getUser().getUsername()],
+          true,
+        ),
+        choices: [
+          {
+            name: languageHandler.getTranslation("menu.start.option.balance"),
+            value: START_MENU_OPTIONS.BALANCE,
+          },
+        ],
+        theme: VENDING_MACHINE_THEME,
+      },
+      { clearPromptOnDone: true },
+    );
+  }
+
+  private async handleUserChoice(choice: number) {
+    switch (choice) {
+      case START_MENU_OPTIONS.BALANCE:
+        await this.displayBalanceMenu();
+        break;
+      default:
+        this.displayBalanceMenu();
+        break;
+    }
+  }
+
+  private async displayBalanceMenu() {}
 }

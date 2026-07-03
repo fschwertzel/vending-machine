@@ -73,7 +73,7 @@ export class VendingMachine {
       });
       throw err;
     });
-    process.stdout.write(CLEAR_CODE);
+    this.clearScreen();
     this.currentUser = new User(getUserData(username));
     await displayStartMenu(this);
   }
@@ -89,5 +89,9 @@ export class VendingMachine {
       exitOnError: true,
     });
     throw err;
+  }
+
+  public clearScreen() {
+    process.stdout.write(CLEAR_CODE);
   }
 }

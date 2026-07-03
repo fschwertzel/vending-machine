@@ -9,9 +9,17 @@
   "menu.start.prompt_e": "こんばんは、%くん。もう眠くなってきた？≧☉_☉≦ そうじゃないといいな。 (￣_￣)・・・ おやつを買おうよ！！( `ω´ )",
   "menu.start.option.balance": "残高を管理する",
 
+  "menu.start.option.return": "↲ 戻る",
+  "menu.error.prompt.q": "もう一度試してみますか？",
+  "menu.error.prompt.y": "はい",
+  "menu.error.prompt.n": "いいえ",
+
   "menu.balance.prompt": "やあやあ、ここになんと¥%もあなたのお金があるよ、使うか、それとも返してもらうか？！",
+  "menu.balance.input.invalid": "うーん…希望の金額が少なすぎるか、多すぎるみたいね。ゼロより大きい数字を力入してください！！ (◠‿◠)",
+  "menu.balance.input.overflow": "残念なお知らせ… (μ_μ) もしリクエストを受け入れたら、残高がオーバーフローしちゃうよ！！ ヽ(‵﹏´)ノ だから、残高を減らしてね。 (`ー´)",
   "menu.start.option.topup": "残高をチャージする",
   "menu.start.option.topup.prompt": "いくら（円）チャージしますか？",
+  "menu.start.option.topup.prompt.custom": "¥任意の金額",
   "menu.start.option.withdraw": "残高から引き出す",
   "menu.start.option.withdraw.prompt": "いくら（円）を引き出しますか？"
 }

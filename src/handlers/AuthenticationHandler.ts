@@ -5,9 +5,7 @@ import {
 } from "../db/queries/Authentication.ts";
 import { getLanguageHandler, getLogger } from "../index.ts";
 
-export async function validateUsername(
-  username: string,
-): Promise<boolean | string> {
+export function validateUsername(username: string): boolean | string {
   if (username.length < 2 || username.length > 16) {
     return getLanguageHandler().getTranslation("auth.username.length");
   }

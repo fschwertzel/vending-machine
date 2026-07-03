@@ -9,9 +9,17 @@
   "menu.start.prompt_e": "Good evening %, are you sleepy yet?? ≧☉_☉≦ I hope not. (￣_￣)・・・ Lets buy some snacks!! ( `ω´ )",
   "menu.start.option.balance": "Manage your balance",
 
+  "menu.start.option.return": "↲ Go back",
+  "menu.error.prompt.q": "Do you want to try again?",
+  "menu.error.prompt.y": "Yes",
+  "menu.error.prompt.n": "No",
+
   "menu.balance.prompt": "Hii Hi, you have a whopping total of ¥% sitting here right with me, spend them or take them back?!",
+  "menu.balance.input.invalid": "Hmm.. seems like your desired amount is either too small or too much; enter anything bigger than zero!! (◠‿◠)",
+  "menu.balance.input.overflow": "Bad news.. (μ_μ) If I were to accept your request, your balance would OVERFLOW!! ヽ(‵﹏´)ノ So, reduce it. (`ー´)",
   "menu.start.option.topup": "Top up your balance",
   "menu.start.option.topup.prompt": "How much ¥ would you like to top up?",
+  "menu.start.option.topup.prompt.custom": "¥Custom",
   "menu.start.option.withdraw": "Withdraw from your balance",
   "menu.start.option.withdraw.prompt": "How much ¥ would you like to withdraw?"
 }

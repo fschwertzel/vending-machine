@@ -50,7 +50,8 @@ export class DatabaseInterface {
         product_id INTEGER PRIMARY KEY AUTOINCREMENT ,
         product_name VARCHAR(128) NOT NULL,
         product_description VARCHAR(256) NOT NULL,
-        stock_amount INTEGER DEFAULT 0 NOT NULL
+        discount_condition INTEGER DEFAULT 0 NOT NULL,
+        discount_amount INTEGER DEFAULT 0 NOT NULL
       );`,
       `CREATE TABLE IF NOT EXISTS shopping_carts (
         card_id INTEGER PRIMARY KEY AUTOINCREMENT ,

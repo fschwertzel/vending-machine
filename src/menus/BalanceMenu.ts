@@ -10,19 +10,29 @@ import {
 } from "../handlers/BalanceHandler.ts";
 import { displayErrorRetryMenu } from "./ErrorMenu.ts";
 import { displayStartMenu } from "./StartMenu.ts";
+import type { UserData } from "../db/queries/Authentication.ts";
+import type { User } from "../utils/User.ts";
 
-export const BALANCE_MENU_OPTIONS = {
+export const BALANCE_OPTIONS = {
   TOP_UP_ROOT: 0,
   WITHDRAW_ROOT: 1,
   RETURN: 2,
 };
 
-export const TOP_UP_MENU_OPTIONS = {
+export const TOP_UP_OPTIONS = {
   TOP_UP_1000: 1000,
   TOP_UP_2500: 2500,
   TOP_UP_5000: 5000,
   TOP_UP_10000: 10000,
   TOP_UP_CUSTOM: 0,
+  RETURN: 1,
+};
+export const WITHDRAW_OPTIONS = {
+  WITHDRAW_1000: 1000,
+  WITHDRAW_2500: 2500,
+  WITHDRAW_5000: 5000,
+  WITHDRAW_10000: 10000,
+  WITHDRAW_CUSTOM: 0,
   RETURN: 1,
 };
 
@@ -37,15 +47,15 @@ export async function displayBalanceMenu(vendingMachine: VendingMachine) {
       choices: [
         {
           name: languageHandler.getTranslation("menu.start.option.topup"),
-          value: BALANCE_MENU_OPTIONS.TOP_UP_ROOT,
+          value: BALANCE_OPTIONS.TOP_UP_ROOT,
         },
         {
           name: languageHandler.getTranslation("menu.start.option.withdraw"),
-          value: BALANCE_MENU_OPTIONS.WITHDRAW_ROOT,
+          value: BALANCE_OPTIONS.WITHDRAW_ROOT,
         },
         {
           name: languageHandler.getTranslation("menu.start.option.return"),
-          value: BALANCE_MENU_OPTIONS.RETURN,
+          value: BALANCE_OPTIONS.RETURN,
         },
       ],
       theme: VENDING_MACHINE_THEME,
@@ -60,96 +70,148 @@ export async function handleBalanceMenu(
   option: number,
 ) {
   const languageHandler = getLanguageHandler();
+  const availableAmounts = [1000, 2500, 5000, 10000];
+  const topUpOptions = [
+    ...availableAmounts.map((amount) => ({
+      name: `¥${amount}`,
+      value: TOP_UP_OPTIONS[`TOP_UP_${amount}` as keyof typeof TOP_UP_OPTIONS],
+    })),
+    {
+      name: languageHandler.getTranslation("menu.option.balance.prompt.custom"),
+      value: TOP_UP_OPTIONS.TOP_UP_CUSTOM,
+    },
+    {
+      name: languageHandler.getTranslation("menu.start.option.return"),
+      value: TOP_UP_OPTIONS.RETURN,
+    },
+  ];
+  const withdrawOptions = [
+    ...availableAmounts.map((amount) => ({
+      name: `¥${amount}`,
+      value:
+        WITHDRAW_OPTIONS[`WITHDRAW_${amount}` as keyof typeof WITHDRAW_OPTIONS],
+    })),
+    {
+      name: languageHandler.getTranslation("menu.option.balance.prompt.custom"),
+      value: WITHDRAW_OPTIONS.WITHDRAW_CUSTOM,
+    },
+    {
+      name: languageHandler.getTranslation("menu.start.option.return"),
+      value: WITHDRAW_OPTIONS.RETURN,
+    },
+  ];
   switch (option) {
-    case BALANCE_MENU_OPTIONS.TOP_UP_ROOT:
+    case BALANCE_OPTIONS.TOP_UP_ROOT:
+    case BALANCE_OPTIONS.WITHDRAW_ROOT:
+      const isTopUp = option === BALANCE_OPTIONS.TOP_UP_ROOT;
       const subOption = await select(
         {
           message: languageHandler.getTranslation(
-            "menu.start.option.topup.prompt",
+            `menu.start.option.${isTopUp ? "topup" : "withdraw"}.prompt`,
           ),
-          choices: [
-            {
-              name: "¥1000",
-              value: TOP_UP_MENU_OPTIONS.TOP_UP_1000,
-            },
-            {
-              name: "¥2500",
-              value: TOP_UP_MENU_OPTIONS.TOP_UP_2500,
-            },
-            {
-              name: "¥5000",
-              value: TOP_UP_MENU_OPTIONS.TOP_UP_5000,
-            },
-            {
-              name: "¥10000",
-              value: TOP_UP_MENU_OPTIONS.TOP_UP_10000,
-            },
-            {
-              name: languageHandler.getTranslation(
-                "menu.start.option.topup.prompt.custom",
-              ),
-              value: TOP_UP_MENU_OPTIONS.TOP_UP_CUSTOM,
-            },
-            {
-              name: languageHandler.getTranslation("menu.start.option.return"),
-              value: TOP_UP_MENU_OPTIONS.RETURN,
-            },
-          ],
+          choices: [...(isTopUp ? topUpOptions : withdrawOptions)],
           theme: VENDING_MACHINE_THEME,
         },
         { clearPromptOnDone: true },
       );
-      await handleTopUpMenu(vendingMachine, subOption);
+      if (isTopUp) {
+        await handleTopUpMenu(vendingMachine, subOption);
+      } else {
+        await awaitWithdrawMenu(vendingMachine, subOption);
+      }
       break;
-    case BALANCE_MENU_OPTIONS.RETURN:
+    case BALANCE_OPTIONS.RETURN:
       await displayStartMenu(vendingMachine);
       return;
   }
 }
 
 async function handleTopUpMenu(vendingMachine: VendingMachine, option: number) {
-  const languageHandler = getLanguageHandler();
   const user = vendingMachine.getUser();
   switch (option) {
-    case TOP_UP_MENU_OPTIONS.TOP_UP_1000:
-    case TOP_UP_MENU_OPTIONS.TOP_UP_2500:
-    case TOP_UP_MENU_OPTIONS.TOP_UP_5000:
-    case TOP_UP_MENU_OPTIONS.TOP_UP_10000:
-      while (true) {
-        const res = validateInputAmount(user.getUserID(), option);
-        if (typeof res === "string") {
-          const shouldRetry = await displayErrorRetryMenu(
-            `${res}\n${languageHandler.getTranslation("menu.error.prompt.q")}`,
-          );
-          if (shouldRetry) {
-            continue;
-          }
-          break;
-        }
-        user.addBalance(option);
-        break;
-      }
+    case TOP_UP_OPTIONS.TOP_UP_1000:
+    case TOP_UP_OPTIONS.TOP_UP_2500:
+    case TOP_UP_OPTIONS.TOP_UP_5000:
+    case TOP_UP_OPTIONS.TOP_UP_10000:
+      await handleInputValidation(user, option, () => user.addBalance(amount));
       break;
-    case TOP_UP_MENU_OPTIONS.TOP_UP_CUSTOM:
-      const amount = await number(
-        {
-          message: languageHandler.getTranslation(
-            "menu.start.option.topup.prompt",
-          ),
-          theme: VENDING_MACHINE_THEME,
-          required: true,
-          default: 1000,
-          validate: async function (amount) {
-            return validateInputAmount(user.getUserID(), amount);
-          },
-        },
-        { clearPromptOnDone: true },
+    case TOP_UP_OPTIONS.TOP_UP_CUSTOM:
+      const amount = await getCustomInput(
+        user,
+        getLanguageHandler().getTranslation("menu.start.option.topup.prompt"),
       );
-      user.addBalance(amount);
+      await handleInputValidation(user, option, () => user.addBalance(amount));
       break;
-    case TOP_UP_MENU_OPTIONS.RETURN:
+    case TOP_UP_OPTIONS.RETURN:
       await displayBalanceMenu(vendingMachine);
       return;
   }
   await displayBalanceMenu(vendingMachine);
+}
+
+async function awaitWithdrawMenu(
+  vendingMachine: VendingMachine,
+  option: number,
+) {
+  const user = vendingMachine.getUser();
+  switch (option) {
+    case WITHDRAW_OPTIONS.WITHDRAW_1000:
+    case WITHDRAW_OPTIONS.WITHDRAW_2500:
+    case WITHDRAW_OPTIONS.WITHDRAW_5000:
+    case WITHDRAW_OPTIONS.WITHDRAW_10000:
+      await handleInputValidation(user, option, () =>
+        user.removeBalance(option),
+      );
+      break;
+    case WITHDRAW_OPTIONS.WITHDRAW_CUSTOM:
+      const amount = await getCustomInput(
+        user,
+        getLanguageHandler().getTranslation(
+          "menu.start.option.withdraw.prompt",
+        ),
+      );
+      await handleInputValidation(user, option, () =>
+        user.removeBalance(amount),
+      );
+      break;
+    case WITHDRAW_OPTIONS.RETURN:
+      await displayBalanceMenu(vendingMachine);
+      return;
+  }
+  await displayBalanceMenu(vendingMachine);
+}
+
+async function handleInputValidation(
+  user: User,
+  option: number,
+  callback: Function,
+): Promise<boolean> {
+  while (true) {
+    const res = validateInputAmount(user.getUserID(), option);
+    if (typeof res === "string" || callback() === false) {
+      const shouldRetry = await displayErrorRetryMenu(
+        `${res}\n${getLanguageHandler().getTranslation("menu.error.prompt.q")}`,
+      );
+      if (shouldRetry) {
+        continue;
+      }
+      return false;
+    }
+    return true;
+  }
+}
+
+async function getCustomInput(user: User, prompt: string): Promise<number> {
+  return await number(
+    {
+      message: prompt,
+      theme: VENDING_MACHINE_THEME,
+      required: true,
+      default: 1000,
+      validate: async function (amount) {
+        return validateInputAmount(user.getUserID(), amount);
+      },
+    },
+    { clearPromptOnDone: true },
+  );
 }

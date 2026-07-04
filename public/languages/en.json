@@ -19,7 +19,7 @@
   "menu.balance.input.overflow": "Bad news.. (μ_μ) If I were to accept your request, your balance would OVERFLOW!! ヽ(‵﹏´)ノ So, reduce it. (`ー´)",
   "menu.start.option.topup": "Top up your balance",
   "menu.start.option.topup.prompt": "How much ¥ would you like to top up?",
-  "menu.start.option.topup.prompt.custom": "¥Custom",
+  "menu.option.balance.prompt.custom": "¥Custom",
   "menu.start.option.withdraw": "Withdraw from your balance",
   "menu.start.option.withdraw.prompt": "How much ¥ would you like to withdraw?"
 }

@@ -19,7 +19,7 @@
   "menu.balance.input.overflow": "残念なお知らせ… (μ_μ) もしリクエストを受け入れたら、残高がオーバーフローしちゃうよ！！ ヽ(‵﹏´)ノ だから、残高を減らしてね。 (`ー´)",
   "menu.start.option.topup": "残高をチャージする",
   "menu.start.option.topup.prompt": "いくら（円）チャージしますか？",
-  "menu.start.option.topup.prompt.custom": "¥任意の金額",
+  "menu.option.balance.prompt.custom": "¥任意の金額",
   "menu.start.option.withdraw": "残高から引き出す",
   "menu.start.option.withdraw.prompt": "いくら（円）を引き出しますか？"
 }

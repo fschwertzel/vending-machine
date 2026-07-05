@@ -184,9 +184,12 @@ async function handleInputValidation(
   callback: () => boolean | void | Promise<boolean | void>,
 ): Promise<void> {
   const res = validateInputAmount(user.getUserID(), amount);
-  if (typeof res === "string" || callback() === false) {
-    // Issue lies in the callback, if false is returned; return error message.
+  if (typeof res === "string") {
     await displayErrorProceedMenu(`${res}`);
+  } else if (callback() === false) {
+    await displayErrorProceedMenu(
+      getLanguageHandler().getTranslation("menu.balance.input.invalid"),
+    );
   }
 }
 

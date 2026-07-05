@@ -11,6 +11,7 @@
 
   "menu.start.option.return": "↲ 戻る",
   "menu.error.prompt.q": "もう一度試してみますか？",
+  "menu.error.prompt.p": "次へ",
   "menu.error.prompt.y": "はい",
   "menu.error.prompt.n": "いいえ",
 

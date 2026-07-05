@@ -11,6 +11,7 @@
 
   "menu.start.option.return": "↲ Go back",
   "menu.error.prompt.q": "Do you want to try again?",
+  "menu.error.prompt.p": "Proceed",
   "menu.error.prompt.y": "Yes",
   "menu.error.prompt.n": "No",
 

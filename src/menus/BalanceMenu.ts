@@ -1,5 +1,5 @@
 import { number, select } from "@inquirer/prompts";
-import { getLanguageHandler, getLogger } from "../index.ts";
+import { getLanguageHandler } from "../index.ts";
 import {
   VENDING_MACHINE_THEME,
   type VendingMachine,
@@ -8,9 +8,8 @@ import {
   getUserBalance,
   validateInputAmount,
 } from "../handlers/BalanceHandler.ts";
-import { displayErrorRetryMenu } from "./ErrorMenu.ts";
+import { displayErrorProceedMenu } from "./ErrorMenu.ts";
 import { displayStartMenu } from "./StartMenu.ts";
-import type { UserData } from "../db/queries/Authentication.ts";
 import type { User } from "../utils/User.ts";
 
 export const BALANCE_OPTIONS = {
@@ -133,14 +132,13 @@ async function handleTopUpMenu(vendingMachine: VendingMachine, option: number) {
     case TOP_UP_OPTIONS.TOP_UP_2500:
     case TOP_UP_OPTIONS.TOP_UP_5000:
     case TOP_UP_OPTIONS.TOP_UP_10000:
-      await handleInputValidation(user, option, () => user.addBalance(amount));
+      await handleInputValidation(user, option, () => user.addBalance(option));
       break;
     case TOP_UP_OPTIONS.TOP_UP_CUSTOM:
       const amount = await getCustomInput(
-        user,
         getLanguageHandler().getTranslation("menu.start.option.topup.prompt"),
       );
-      await handleInputValidation(user, option, () => user.addBalance(amount));
+      await handleInputValidation(user, amount, () => user.addBalance(amount));
       break;
     case TOP_UP_OPTIONS.RETURN:
       await displayBalanceMenu(vendingMachine);
@@ -165,12 +163,11 @@ async function awaitWithdrawMenu(
       break;
     case WITHDRAW_OPTIONS.WITHDRAW_CUSTOM:
       const amount = await getCustomInput(
-        user,
         getLanguageHandler().getTranslation(
           "menu.start.option.withdraw.prompt",
         ),
       );
-      await handleInputValidation(user, option, () =>
+      await handleInputValidation(user, amount, () =>
         user.removeBalance(amount),
       );
       break;
@@ -183,34 +180,23 @@ async function awaitWithdrawMenu(
 
 async function handleInputValidation(
   user: User,
-  option: number,
-  callback: Function,
-): Promise<boolean> {
-  while (true) {
-    const res = validateInputAmount(user.getUserID(), option);
-    if (typeof res === "string" || callback() === false) {
-      const shouldRetry = await displayErrorRetryMenu(
-        `${res}\n${getLanguageHandler().getTranslation("menu.error.prompt.q")}`,
-      );
-      if (shouldRetry) {
-        continue;
-      }
-      return false;
-    }
-    return true;
+  amount: number,
+  callback: () => boolean | void | Promise<boolean | void>,
+): Promise<void> {
+  const res = validateInputAmount(user.getUserID(), amount);
+  if (typeof res === "string" || callback() === false) {
+    // Issue lies in the callback, if false is returned; return error message.
+    await displayErrorProceedMenu(`${res}`);
   }
 }
 
-async function getCustomInput(user: User, prompt: string): Promise<number> {
+async function getCustomInput(prompt: string): Promise<number> {
   return await number(
     {
       message: prompt,
       theme: VENDING_MACHINE_THEME,
       required: true,
       default: 1000,
-      validate: async function (amount) {
-        return validateInputAmount(user.getUserID(), amount);
-      },
     },
     { clearPromptOnDone: true },
   );

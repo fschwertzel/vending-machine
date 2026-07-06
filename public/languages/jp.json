@@ -7,13 +7,23 @@
   "menu.start.prompt_m": "おはよう～ %、今日は何したい？？ ヽ(・∀・)ﾉ せんたくしがいっぱいあるね！！！ ＼(≧▽≦)／",
   "menu.start.prompt_a": "%くん、こんにちは。何か気になることはある？？？ (•⩊•) 何か選んでみてください！！！！ ⸜( ´ ꒳ ` )⸝",
   "menu.start.prompt_e": "こんばんは、%くん。もう眠くなってきた？≧☉_☉≦ そうじゃないといいな。 (￣_￣)・・・ おやつを買おうよ！！( `ω´ )",
+
   "menu.start.option.balance": "残高を管理する",
+  "menu.start.option.products": "商品を見る",
 
   "menu.start.option.return": "↲ 戻る",
   "menu.error.prompt.q": "もう一度試してみますか？",
   "menu.error.prompt.p": "次へ",
   "menu.error.prompt.y": "はい",
   "menu.error.prompt.n": "いいえ",
+
+  "menu.products.prompt": "何をお求めですか？当店には……何でも揃っていますよ。(•⩊•)",
+  "menu.products.prompt.amount": "どのくらいの量をお買い求めになりますか？",
+  "menu.products.name": "品名",
+  "menu.products.description": "説明",
+  "menu.products.invalid_product": "おっと…お選びいただいた商品は存在しないようです (μ_μ)",
+  "menu.products.invalid_input": "やめてください。現実的な数字を入力してください。(￣_￣)・・・",
+  "menu.products.insufficient_balance": "この商品は手が出ないようですね。でも、まあ……別の商品を試してみてはどうですか！",
 
   "menu.balance.prompt": "やあやあ、ここになんと¥%もあなたのお金があるよ、使うか、それとも返してもらうか？！",
   "menu.balance.input.invalid": "うーん…希望の金額が少なすぎるか、多すぎるみたいね。ゼロより大きい数字を力入してください！！ (◠‿◠)",

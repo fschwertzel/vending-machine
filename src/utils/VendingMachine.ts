@@ -7,15 +7,21 @@ import {
 } from "../handlers/AuthenticationHandler.ts";
 import { User } from "./User.ts";
 import { displayStartMenu } from "../menus/StartMenu.ts";
+import {
+  selectAllProductData,
+  type ProductData,
+} from "../db/queries/Products.ts";
 
 export const VENDING_MACHINE_THEME = { prefix: "𖠌 :" };
 const CLEAR_CODE = "\u001b[2J\u001b[0;0H\n";
 
 export class VendingMachine {
   currentUser: User | undefined = undefined;
+  productData: Map<number, ProductData> = new Map<number, ProductData>();
 
   public static async create(): Promise<VendingMachine> {
     const vm = new VendingMachine();
+    vm.loadProductData();
     await vm.selectLanguage();
     return vm;
   }
@@ -89,6 +95,37 @@ export class VendingMachine {
       exitOnError: true,
     });
     throw err;
+  }
+
+  private loadProductData() {
+    const productData = selectAllProductData();
+    if (productData === undefined) {
+      getLogger().log({
+        level: "info",
+        message:
+          "No products have been loaded into the cache, what are you trying to sell exactly?",
+      });
+      return;
+    }
+    let count = 0;
+    productData.forEach((product) => {
+      this.productData.set(product.product_id, {
+        product_name: product.product_name,
+        product_description: product.product_description,
+        product_price: product.product_price,
+        discount_condition: product.discount_condition,
+        discount_amount: product.discount_amount,
+      });
+      count++;
+    });
+    getLogger().log({
+      level: "info",
+      message: `Loaded ${count} products into the product cache.`,
+    });
+  }
+
+  public getProductData(): Map<number, ProductData> {
+    return this.productData;
   }
 
   public clearScreen() {

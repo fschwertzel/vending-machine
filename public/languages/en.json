@@ -7,13 +7,23 @@
   "menu.start.prompt_m": "Gooood morning %, what'd you like to do today?? ヽ(・∀・)ﾉ There is so many options!!! ＼(≧▽≦)／",
   "menu.start.prompt_a": "Good afternoon %, what do you have on your mind??? (•⩊•) Just choose something!!!! ⸜( ´ ꒳ ` )⸝ ",
   "menu.start.prompt_e": "Good evening %, are you sleepy yet?? ≧☉_☉≦ I hope not. (￣_￣)・・・ Lets buy some snacks!! ( `ω´ )",
+
   "menu.start.option.balance": "Manage your balance",
+  "menu.start.option.products": "Shop products",
 
   "menu.start.option.return": "↲ Go back",
   "menu.error.prompt.q": "Do you want to try again?",
   "menu.error.prompt.p": "Proceed",
   "menu.error.prompt.y": "Yes",
   "menu.error.prompt.n": "No",
+
+  "menu.products.prompt": "What would you like to buy? We've got.. everything. (•⩊•)",
+  "menu.products.prompt.amount": "How much would you like to buy?",
+  "menu.products.name": "Name",
+  "menu.products.description": "Description",
+  "menu.products.invalid_product": "Whoopsie.. seems like your chosen product doesn't exist (μ_μ)",
+  "menu.products.invalid_input": "Stop. Enter a realistic number please. (￣_￣)・・・",
+  "menu.products.insufficient_balance": "Seems like you can't afford this product, but hey... try another!",
 
   "menu.balance.prompt": "Hii Hi, you have a whopping total of ¥% sitting here right with me, spend them or take them back?!",
   "menu.balance.input.invalid": "Hmm.. seems like your desired amount is either too small or too much; enter anything bigger than zero!! (◠‿◠)",

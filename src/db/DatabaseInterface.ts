@@ -17,6 +17,7 @@ export class DatabaseInterface {
       this.db.pragma("journal_mode = WAL;");
       this.db.pragma("foreign_keys = ON;");
       this.createDatabaseSchema();
+      this.loadProducts();
     } catch (e) {
       const err = new Error(`Failed to initiate database interface: ${e}`);
       getLogger().log({
@@ -31,7 +32,7 @@ export class DatabaseInterface {
   private createDatabaseSchema() {
     const statements = [
       `CREATE TABLE IF NOT EXISTS user_data (
-        user_id INTEGER PRIMARY KEY AUTOINCREMENT ,
+        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
         username VARCHAR(16) UNIQUE NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );`,
@@ -50,6 +51,7 @@ export class DatabaseInterface {
         product_id INTEGER PRIMARY KEY AUTOINCREMENT ,
         product_name VARCHAR(128) NOT NULL,
         product_description VARCHAR(256) NOT NULL,
+        product_price INTEGER NOT NULL,
         discount_condition INTEGER DEFAULT 0 NOT NULL,
         discount_amount INTEGER DEFAULT 0 NOT NULL
       );`,
@@ -76,6 +78,31 @@ export class DatabaseInterface {
         this.db.prepare(sql).run();
       }
     })();
+  }
+
+  private loadProducts() {
+    const productQuery = this.db.prepare(
+      "INSERT INTO product_data VALUES (null, @product_name, @product_description, @product_price, @discount_condition, @discount_amount)",
+    );
+    const insertionStmt = this.db.transaction((products) => {
+      for (const product of products) productQuery.run(product);
+    });
+    insertionStmt([
+      {
+        product_name: "ハンバーガー",
+        product_description: "マックドナルドのハンバーガー、美味しそうよ",
+        product_price: 1000,
+        discount_condition: 5,
+        discount_amount: 10,
+      },
+      {
+        product_name: "リンゴジュース",
+        product_description: "すごくヘルシー！",
+        product_price: 2500,
+        discount_condition: 2,
+        discount_amount: 20,
+      },
+    ]);
   }
 
   public getDatabase() {

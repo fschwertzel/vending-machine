@@ -5,9 +5,11 @@ import {
   type VendingMachine,
 } from "../utils/VendingMachine.ts";
 import { displayBalanceMenu } from "./BalanceMenu.ts";
+import { displayProductMenu } from "./ProductMenu.ts";
 
 export const START_MENU_OPTIONS = {
   BALANCE: 0,
+  PRODUCTS: 1,
 };
 
 export async function displayStartMenu(vendingMachine: VendingMachine) {
@@ -24,6 +26,10 @@ export async function displayStartMenu(vendingMachine: VendingMachine) {
           name: languageHandler.getTranslation("menu.start.option.balance"),
           value: START_MENU_OPTIONS.BALANCE,
         },
+        {
+          name: languageHandler.getTranslation("menu.start.option.products"),
+          value: START_MENU_OPTIONS.PRODUCTS,
+        },
       ],
       theme: VENDING_MACHINE_THEME,
     },
@@ -39,6 +45,9 @@ export async function handleStartMenuOption(
   switch (option) {
     case START_MENU_OPTIONS.BALANCE:
       await displayBalanceMenu(vendingMachine);
+      break;
+    case START_MENU_OPTIONS.PRODUCTS:
+      await displayProductMenu(vendingMachine);
       break;
     default:
       await displayStartMenu(vendingMachine);

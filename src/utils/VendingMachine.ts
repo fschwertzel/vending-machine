@@ -11,13 +11,16 @@ import {
   selectAllProductData,
   type ProductData,
 } from "../db/queries/Products.ts";
+import { selectShoppingCart } from "../db/queries/ShoppingCarts.ts";
+import { ShoppingCart } from "./ShoppingCart.js";
 
 export const VENDING_MACHINE_THEME = { prefix: "𖠌 :" };
 const CLEAR_CODE = "\u001b[2J\u001b[0;0H\n";
 
 export class VendingMachine {
   currentUser: User | undefined = undefined;
-  productData: Map<number, ProductData> = new Map<number, ProductData>();
+  productDataCache: Map<number, ProductData> = new Map<number, ProductData>();
+  shoppingCart: ShoppingCart = new ShoppingCart(this);
 
   public static async create(): Promise<VendingMachine> {
     const vm = new VendingMachine();
@@ -81,6 +84,7 @@ export class VendingMachine {
     });
     this.clearScreen();
     this.currentUser = new User(getUserData(username));
+    this.loadShoppingCart();
     await displayStartMenu(this);
   }
 
@@ -107,25 +111,38 @@ export class VendingMachine {
       });
       return;
     }
-    let count = 0;
     productData.forEach((product) => {
-      this.productData.set(product.product_id, {
+      this.productDataCache.set(product.product_id, {
         product_name: product.product_name,
         product_description: product.product_description,
         product_price: product.product_price,
         discount_condition: product.discount_condition,
         discount_amount: product.discount_amount,
       });
-      count++;
-    });
-    getLogger().log({
-      level: "info",
-      message: `Loaded ${count} products into the product cache.`,
     });
   }
 
-  public getProductData(): Map<number, ProductData> {
-    return this.productData;
+  private loadShoppingCart() {
+    const cartData = selectShoppingCart(this.getUser().getUserID());
+    if (cartData === undefined) {
+      getLogger().log({
+        level: "info",
+        message:
+          "No shopping cart data found for the current user, not a big spender eh?",
+      });
+      return;
+    }
+    cartData.forEach((product) => {
+      this.shoppingCart.addProduct(product.product_id, product.amount);
+    });
+  }
+
+  public getProductDataCache(): Map<number, ProductData> {
+    return this.productDataCache;
+  }
+
+  public getShoppingCart(): ShoppingCart {
+    return this.shoppingCart;
   }
 
   public clearScreen() {

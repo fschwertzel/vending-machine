@@ -56,7 +56,7 @@ export class DatabaseInterface {
         discount_amount INTEGER DEFAULT 0 NOT NULL
       );`,
       `CREATE TABLE IF NOT EXISTS shopping_carts (
-        card_id INTEGER PRIMARY KEY AUTOINCREMENT ,
+        cart_id INTEGER PRIMARY KEY AUTOINCREMENT ,
         user_id INTEGER NOT NULL REFERENCES user_data(user_id),
         product_id INTEGER  NOT NULL REFERENCES product_data(product_id),
         amount INTEGER NOT NULL DEFAULT 1,

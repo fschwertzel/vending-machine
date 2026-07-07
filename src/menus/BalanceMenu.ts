@@ -4,13 +4,13 @@ import {
   VENDING_MACHINE_THEME,
   type VendingMachine,
 } from "../utils/VendingMachine.ts";
+import { displayErrorProceedMenu } from "./ErrorMenu.ts";
+import { displayStartMenu } from "./StartMenu.ts";
+import type { User } from "../utils/User.ts";
 import {
   getUserBalance,
   validateInputAmount,
 } from "../handlers/BalanceHandler.ts";
-import { displayErrorProceedMenu } from "./ErrorMenu.ts";
-import { displayStartMenu } from "./StartMenu.ts";
-import type { User } from "../utils/User.ts";
 
 export const BALANCE_OPTIONS = {
   TOP_UP_ROOT: 0,

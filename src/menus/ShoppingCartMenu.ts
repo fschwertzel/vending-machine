@@ -6,35 +6,46 @@ import {
 } from "../utils/VendingMachine.ts";
 import { displayErrorProceedMenu } from "./ErrorMenu.ts";
 import { displayStartMenu } from "./StartMenu.ts";
+import type { ShoppingCartData } from "../db/queries/ShoppingCarts.ts";
 
-export type ProductOption = {
+export type CartOption = {
   name: string;
   value: number;
 };
 
-const PRODUCT_OPTIONS = {
+const CART_OPTIONS = {
+  S: 1,
   RETURN: -1,
 };
 
-export async function displayProductMenu(vendingMachine: VendingMachine) {
+export async function displayShoppingCartMenu(vendingMachine: VendingMachine) {
   const languageHandler = getLanguageHandler();
-  const productOptions: ProductOption[] = [];
 
-  vendingMachine.getProductDataCache().forEach((data, key) => {
-    productOptions.push({
-      name: `${data.product_name} : ¥${data.product_price}`,
-      value: key,
+  const productCache = vendingMachine.getProductDataCache();
+  const cartData: ShoppingCartData = vendingMachine
+    .getShoppingCart()
+    .getCartData();
+  const cartOptions: CartOption[] = [];
+
+  for (const [id, amount] of cartData.entries()) {
+    const productData = productCache.get(id);
+    if (productData === undefined) {
+      continue;
+    }
+    cartOptions.push({
+      name: `${productData.product_name} : ${amount}`,
+      value: id,
     });
-  });
+  }
 
   const selectedOption = await select(
     {
-      message: languageHandler.getTranslation("menu.products.prompt"),
+      message: languageHandler.getTranslation("menu.shopping_cart.prompt"),
       choices: [
-        ...productOptions,
+        ...cartOptions,
         {
           name: languageHandler.getTranslation("menu.start.option.return"),
-          value: PRODUCT_OPTIONS.RETURN,
+          value: CART_OPTIONS.RETURN,
         },
       ],
       pageSize: 10,
@@ -43,14 +54,16 @@ export async function displayProductMenu(vendingMachine: VendingMachine) {
     },
     { clearPromptOnDone: true },
   );
-  if (selectedOption === PRODUCT_OPTIONS.RETURN) {
+  if (selectedOption === CART_OPTIONS.RETURN) {
     await displayStartMenu(vendingMachine);
     return;
   }
-  await selectProductCountMenu(vendingMachine, selectedOption);
+  // await selectCartItemMenu(vendingMachine, selectedOption);
 }
 
-async function selectProductCountMenu(
+/*
+
+async function selectCartItemMenu(
   vendingMachine: VendingMachine,
   productId: number,
 ) {
@@ -95,3 +108,5 @@ async function selectProductCountMenu(
   await displayProductMenu(vendingMachine);
   return;
 }
+
+ */

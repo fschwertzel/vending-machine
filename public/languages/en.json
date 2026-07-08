@@ -27,7 +27,11 @@
   "menu.products.insufficient_balance": "Seems like you can't afford this product, but hey... try another!",
   "menu.shopping_cart.add.error": "I'm reallyyy sorry but it seems like you can't add this product at the moment.. 。゜゜(´Ｏ`) ゜゜。",
 
+  "menu.products.amount": "Amount",
+  "menu.products.price": "Price",
   "menu.shopping_cart.prompt": "Check out your shopping cart, anything you'd like to remove (please don't!!!!) or would you like to checkout?? ＼(≧▽≦)／",
+  "menu.shopping_cart.selcted_item.prompt": "Choose an option",
+  "menu.shopping_cart.option.checkout": "➜ Checkout",
 
   "menu.balance.prompt": "Hii Hi, you have a whopping total of ¥% sitting here right with me, spend them or take them back?!",
   "menu.balance.input.invalid": "Hmm.. seems like your desired amount is either too small or too much; enter anything bigger than zero!! (◠‿◠)",

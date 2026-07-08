@@ -26,7 +26,11 @@
   "menu.products.invalid_input": "やめてください。現実的な数字を入力してください。(￣_￣)・・・",
   "menu.products.insufficient_balance": "この商品は手が出ないようですね。でも、まあ……別の商品を試してみてはどうですか！",
 
+  "menu.products.amount": "商品数量",
+  "menu.products.price": "価格",
   "menu.shopping_cart.prompt": "ショッピングカートを確認してください。削除したい商品はありませんか（お願いだからやめてね！！）？それとも、お会計に進みますか？？ ＼(≧▽≦)／",
+  "menu.shopping_cart.selcted_item.prompt": "選択肢を選択してください",
+  "menu.shopping_cart.option.checkout": "➜ お会計",
 
   "menu.shopping_cart.add.error": "本当にごめんなさい、でも今のところこの商品をカートに追加できないようです……。゜゜(´Ｏ`) ゜゜。",
 

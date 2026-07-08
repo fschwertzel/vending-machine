@@ -1,4 +1,4 @@
-import { number, select } from "@inquirer/prompts";
+import { select } from "@inquirer/prompts";
 import { getLanguageHandler } from "../index.ts";
 import {
   VENDING_MACHINE_THEME,
@@ -13,9 +13,16 @@ export type CartOption = {
   value: number;
 };
 
-const CART_OPTIONS = {
-  S: 1,
-  RETURN: -1,
+const SHOPPING_CART_OPTIONS = {
+  CHECKOUT: 0,
+  RETURN: 1,
+};
+
+const PRODUCT_OPTIONS = {
+  ADD: 0,
+  REMOVE: 1,
+  REMOVE_ALL: 2,
+  RETURN: 3,
 };
 
 export async function displayShoppingCartMenu(vendingMachine: VendingMachine) {
@@ -44,8 +51,14 @@ export async function displayShoppingCartMenu(vendingMachine: VendingMachine) {
       choices: [
         ...cartOptions,
         {
+          name: languageHandler.getTranslation(
+            "menu.shopping_cart.option.checkout",
+          ),
+          value: SHOPPING_CART_OPTIONS.CHECKOUT,
+        },
+        {
           name: languageHandler.getTranslation("menu.start.option.return"),
-          value: CART_OPTIONS.RETURN,
+          value: SHOPPING_CART_OPTIONS.RETURN,
         },
       ],
       pageSize: 10,
@@ -54,14 +67,12 @@ export async function displayShoppingCartMenu(vendingMachine: VendingMachine) {
     },
     { clearPromptOnDone: true },
   );
-  if (selectedOption === CART_OPTIONS.RETURN) {
+  if (selectedOption === SHOPPING_CART_OPTIONS.RETURN) {
     await displayStartMenu(vendingMachine);
     return;
   }
-  // await selectCartItemMenu(vendingMachine, selectedOption);
+  await selectCartItemMenu(vendingMachine, selectedOption);
 }
-
-/*
 
 async function selectCartItemMenu(
   vendingMachine: VendingMachine,
@@ -72,41 +83,70 @@ async function selectCartItemMenu(
     await displayErrorProceedMenu(
       getLanguageHandler().getTranslation("menu.products.invalid_product"),
     );
-    await displayProductMenu(vendingMachine);
+    await displayShoppingCartMenu(vendingMachine);
     return;
   }
   const languageHandler = getLanguageHandler();
-  const discountPrice = Math.round(
-    productData.discount_condition * productData.product_price -
-      (productData.discount_condition *
-        productData.product_price *
-        productData.discount_amount) /
-        100,
+  const cartData = vendingMachine.getShoppingCart();
+  const productAmount = cartData.getProductAmount(productId);
+
+  const totalPrice = productAmount * productData.product_price;
+  const reducedPrice = Math.round(
+    totalPrice -
+      (productAmount >= productData.discount_condition
+        ? (totalPrice * productData.discount_amount) / 100
+        : 0),
   );
-  const productAmount = await number(
+
+  const selectedOption = await select(
     {
-      message: `\n${languageHandler.getTranslation("menu.products.name")}: ${productData.product_name}\n${languageHandler.getTranslation("menu.products.description")}: ${productData.product_description}\n1x: ¥${productData.product_price}\n${productData.discount_condition}x: ¥${discountPrice} [-%${productData.discount_amount}]\n\n${languageHandler.getTranslation("menu.products.prompt.amount")}`,
-      required: true,
-      validate: function (v) {
-        return Number.isSafeInteger(v)
-          ? true
-          : languageHandler.getTranslation("menu.products.invalid_input");
-      },
+      message: `\n${languageHandler.getTranslation("menu.products.name")}: ${productData.product_name}\n${languageHandler.getTranslation("menu.products.description")}: ${productData.product_description}\n${languageHandler.getTranslation("menu.products.amount")}: ${productAmount}\n${languageHandler.getTranslation("menu.products.price")}:  ¥${reducedPrice} ¥${getDiscountedString(totalPrice)} ${productAmount >= productData.discount_condition ? `[-%${productData.discount_amount}]` : ``}\n\n${languageHandler.getTranslation("menu.shopping_cart.selcted_item.prompt")}`,
+      choices: [
+        {
+          name: languageHandler.getTranslation("menu.start.option.return"),
+          value: PRODUCT_OPTIONS.ADD,
+        },
+        {
+          name: languageHandler.getTranslation("menu.start.option.return"),
+          value: PRODUCT_OPTIONS.REMOVE,
+        },
+        {
+          name: languageHandler.getTranslation("menu.start.option.return"),
+          value: PRODUCT_OPTIONS.REMOVE_ALL,
+        },
+        {
+          name: languageHandler.getTranslation("menu.start.option.return"),
+          value: PRODUCT_OPTIONS.RETURN,
+        },
+      ],
+      pageSize: 10,
       theme: VENDING_MACHINE_THEME,
+      loop: false,
     },
     { clearPromptOnDone: true },
   );
-  if (productAmount <= 0) {
-    await displayProductMenu(vendingMachine);
+  /*
+  if (selectedOption === SHOPPING_CART_OPTIONS.RETURN) {
+    await displayShoppingCartMenu(vendingMachine);
     return;
+  } else if (selectedOption === SHOPPING_CART_OPTIONS.CHECKOUT) {
+    // Handle checkout
   }
-  if (!vendingMachine.getShoppingCart().addProduct(productId, productAmount)) {
+
+  if (!vendingMachine.getShoppingCart().addProduct(productId, option)) {
     await displayErrorProceedMenu(
       getLanguageHandler().getTranslation("menu.shopping_cart.add.error"),
     );
   }
   await displayProductMenu(vendingMachine);
-  return;
+  return; */
 }
 
- */
+function getDiscountedString(before: number): string {
+  const strikeThrough = "\u0336";
+  return before
+    .toString()
+    .split("")
+    .map((c) => c + strikeThrough)
+    .join("");
+}

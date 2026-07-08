@@ -6,6 +6,7 @@ import {
 } from "../utils/VendingMachine.ts";
 import { displayBalanceMenu } from "./BalanceMenu.ts";
 import { displayProductMenu } from "./ProductMenu.ts";
+import { displayShoppingCartMenu } from "./ShoppingCartMenu.ts";
 
 export const START_MENU_OPTIONS = {
   BALANCE: 0,
@@ -35,7 +36,7 @@ export async function displayStartMenu(vendingMachine: VendingMachine) {
           name: languageHandler.getTranslation(
             "menu.start.option.shopping_cart",
           ),
-          value: START_MENU_OPTIONS.PRODUCTS,
+          value: START_MENU_OPTIONS.SHOPPING_CART,
         },
       ],
       theme: VENDING_MACHINE_THEME,

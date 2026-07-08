@@ -103,15 +103,19 @@ async function selectCartItemMenu(
       message: `\n${languageHandler.getTranslation("menu.products.name")}: ${productData.product_name}\n${languageHandler.getTranslation("menu.products.description")}: ${productData.product_description}\n${languageHandler.getTranslation("menu.products.amount")}: ${productAmount}\n${languageHandler.getTranslation("menu.products.price")}:  ¥${reducedPrice} ¥${getDiscountedString(totalPrice)} ${productAmount >= productData.discount_condition ? `[-%${productData.discount_amount}]` : ``}\n\n${languageHandler.getTranslation("menu.shopping_cart.selcted_item.prompt")}`,
       choices: [
         {
-          name: languageHandler.getTranslation("menu.start.option.return"),
+          name: languageHandler.getTranslation("menu.shopping_cart.option.add"),
           value: PRODUCT_OPTIONS.ADD,
         },
         {
-          name: languageHandler.getTranslation("menu.start.option.return"),
+          name: languageHandler.getTranslation(
+            "menu.shopping_cart.option.remove",
+          ),
           value: PRODUCT_OPTIONS.REMOVE,
         },
         {
-          name: languageHandler.getTranslation("menu.start.option.return"),
+          name: languageHandler.getTranslation(
+            "menu.shopping_cart.option.remove_all",
+          ),
           value: PRODUCT_OPTIONS.REMOVE_ALL,
         },
         {
@@ -125,21 +129,58 @@ async function selectCartItemMenu(
     },
     { clearPromptOnDone: true },
   );
-  /*
-  if (selectedOption === SHOPPING_CART_OPTIONS.RETURN) {
-    await displayShoppingCartMenu(vendingMachine);
-    return;
-  } else if (selectedOption === SHOPPING_CART_OPTIONS.CHECKOUT) {
-    // Handle checkout
-  }
+  await handleCartItemOption(vendingMachine, selectedOption, productId);
+}
 
-  if (!vendingMachine.getShoppingCart().addProduct(productId, option)) {
-    await displayErrorProceedMenu(
-      getLanguageHandler().getTranslation("menu.shopping_cart.add.error"),
-    );
+export async function handleCartItemOption(
+  vendingMachine: VendingMachine,
+  option: number,
+  productId?: number,
+) {
+  const shoppingCard = vendingMachine.getShoppingCart();
+  switch (option) {
+    case PRODUCT_OPTIONS.RETURN:
+      await displayShoppingCartMenu(vendingMachine);
+      break;
+    case PRODUCT_OPTIONS.ADD:
+      if (productId === undefined) {
+        await displayErrorProceedMenu(
+          getLanguageHandler().getTranslation("menu.products.invalid_product"),
+        );
+        await displayShoppingCartMenu(vendingMachine);
+      } else {
+        shoppingCard.addProduct(productId, 1);
+        await selectCartItemMenu(vendingMachine, productId);
+      }
+      break;
+    case PRODUCT_OPTIONS.REMOVE:
+      if (productId === undefined) {
+        await displayErrorProceedMenu(
+          getLanguageHandler().getTranslation("menu.products.invalid_product"),
+        );
+        await displayShoppingCartMenu(vendingMachine);
+      } else {
+        shoppingCard.updateProduct(
+          productId,
+          shoppingCard.getProductAmount(productId) - 1,
+        );
+        await selectCartItemMenu(vendingMachine, productId);
+      }
+      break;
+    case PRODUCT_OPTIONS.REMOVE_ALL:
+      if (productId === undefined) {
+        await displayErrorProceedMenu(
+          getLanguageHandler().getTranslation("menu.products.invalid_product"),
+        );
+      } else {
+        shoppingCard.removeProduct(productId);
+      }
+      await displayShoppingCartMenu(vendingMachine);
+      break;
+    default:
+      await displayShoppingCartMenu(vendingMachine);
+      break;
   }
-  await displayProductMenu(vendingMachine);
-  return; */
 }
 
 function getDiscountedString(before: number): string {

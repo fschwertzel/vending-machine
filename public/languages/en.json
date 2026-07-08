@@ -25,7 +25,11 @@
   "menu.products.invalid_product": "Whoopsie.. seems like your chosen product doesn't exist (μ_μ)",
   "menu.products.invalid_input": "Stop. Enter a realistic number please. (￣_￣)・・・",
   "menu.products.insufficient_balance": "Seems like you can't afford this product, but hey... try another!",
+
   "menu.shopping_cart.add.error": "I'm reallyyy sorry but it seems like you can't add this product at the moment.. 。゜゜(´Ｏ`) ゜゜。",
+  "menu.shopping_cart.option.add": "+ Add",
+  "menu.shopping_cart.option.remove": "✗ Remove",
+  "menu.shopping_cart.option.remove_all": "⦸ Remove all",
 
   "menu.products.amount": "Amount",
   "menu.products.price": "Price",

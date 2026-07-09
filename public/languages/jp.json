@@ -11,6 +11,7 @@
   "menu.start.option.balance": "残高を管理する",
   "menu.start.option.products": "商品を見る",
   "menu.start.option.shopping_cart": "ショッピングカートを見る",
+  "menu.start.option.user_statistics" : "ユーザー統計",
 
   "menu.start.option.return": "↲ 戻る",
   "menu.error.prompt.q": "もう一度試してみますか？",
@@ -25,6 +26,7 @@
   "menu.products.invalid_product": "おっと…お選びいただいた商品は存在しないようです (μ_μ)",
   "menu.products.invalid_input": "やめてください。現実的な数字を入力してください。(￣_￣)・・・",
   "menu.products.insufficient_balance": "この商品は手が出ないようですね。でも、まあ……別の商品を試してみてはどうですか！",
+  "menu.products.too_large_amount" : "多すぎだよ！！！もっと少なく、例えば100個くらいにしてみて。(◠‿◠)",
 
   "menu.products.amount": "商品数量",
   "menu.products.price": "価格",
@@ -36,6 +38,8 @@
   "menu.shopping_cart.option.add": "追加",
   "menu.shopping_cart.option.remove": "削除",
   "menu.shopping_cart.option.remove_all": "すべて削除",
+  "menu.shopping_cart.insufficient_balance": "おっと、やあ！！ カート全体の金額に対して残高が全然足りません。商品をいくつか外すか、脱税でもしてください。（•⩊•）",
+  "menu.shopping_cart.check_out.error": "うーん、気まずい……どうやら取引が成立しなかったみたいだ（￣_￣）・・・もう一度試してみる？",
 
   "menu.balance.prompt": "やあやあ、ここになんと¥%もあなたのお金があるよ、使うか、それとも返してもらうか？！",
   "menu.balance.input.invalid": "うーん…希望の金額が少なすぎるか、多すぎるみたいね。ゼロより大きい数字を力入してください！！ (◠‿◠)",

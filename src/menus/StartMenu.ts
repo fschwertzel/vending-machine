@@ -7,11 +7,13 @@ import {
 import { displayBalanceMenu } from "./BalanceMenu.ts";
 import { displayProductMenu } from "./ProductMenu.ts";
 import { displayShoppingCartMenu } from "./ShoppingCartMenu.ts";
+import { displayUserStatisticsMenu } from "./UserStatisticsMenu.ts";
 
 export const START_MENU_OPTIONS = {
   BALANCE: 0,
   PRODUCTS: 1,
   SHOPPING_CART: 2,
+  USER_STATISTICS: 3,
 };
 
 export async function displayStartMenu(vendingMachine: VendingMachine) {
@@ -38,6 +40,12 @@ export async function displayStartMenu(vendingMachine: VendingMachine) {
           ),
           value: START_MENU_OPTIONS.SHOPPING_CART,
         },
+        {
+          name: languageHandler.getTranslation(
+            "menu.start.option.user_statistics",
+          ),
+          value: START_MENU_OPTIONS.USER_STATISTICS,
+        },
       ],
       theme: VENDING_MACHINE_THEME,
     },
@@ -60,6 +68,8 @@ export async function handleStartMenuOption(
     case START_MENU_OPTIONS.SHOPPING_CART:
       await displayShoppingCartMenu(vendingMachine);
       break;
+    case START_MENU_OPTIONS.USER_STATISTICS:
+      await displayUserStatisticsMenu(vendingMachine);
     default:
       await displayStartMenu(vendingMachine);
       break;

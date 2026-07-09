@@ -20,7 +20,7 @@ const CLEAR_CODE = "\u001b[2J\u001b[0;0H\n";
 export class VendingMachine {
   currentUser: User | undefined = undefined;
   productDataCache: Map<number, ProductData> = new Map<number, ProductData>();
-  shoppingCart: ShoppingCart = new ShoppingCart(this);
+  shoppingCart: ShoppingCart | undefined = undefined;
 
   public static async create(): Promise<VendingMachine> {
     const vm = new VendingMachine();
@@ -123,6 +123,7 @@ export class VendingMachine {
   }
 
   private loadShoppingCart() {
+    this.shoppingCart = new ShoppingCart(this);
     const cartData = selectShoppingCart(this.getUser().getUserID());
     if (cartData === undefined) {
       getLogger().log({
@@ -133,7 +134,7 @@ export class VendingMachine {
       return;
     }
     cartData.forEach((product) => {
-      this.shoppingCart.addProduct(product.product_id, product.amount);
+      this.getShoppingCart().addProduct(product.product_id, product.amount);
     });
   }
 
@@ -142,7 +143,17 @@ export class VendingMachine {
   }
 
   public getShoppingCart(): ShoppingCart {
-    return this.shoppingCart;
+    if (this.shoppingCart !== undefined) {
+        return this.shoppingCart;
+    } else {
+      const err = new Error("Tried to access shopping cart before initialization.");
+      getLogger().log({
+        level: "error",
+        message: err.message,
+        exitOnError: true,
+      });
+      throw err;
+    }
   }
 
   public clearScreen() {

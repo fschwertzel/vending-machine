@@ -7,6 +7,8 @@ import {
 import { displayErrorProceedMenu } from "./ErrorMenu.ts";
 import { displayStartMenu } from "./StartMenu.ts";
 import type { ShoppingCartData } from "../db/queries/ShoppingCarts.ts";
+import type { ProductData } from "../db/queries/Products.ts";
+import { setUserStatistics } from "../db/queries/Statistics.ts";
 
 export type CartOption = {
   name: string;
@@ -14,8 +16,8 @@ export type CartOption = {
 };
 
 const SHOPPING_CART_OPTIONS = {
-  CHECKOUT: 0,
-  RETURN: 1,
+  CHECKOUT: -1,
+  RETURN: -2,
 };
 
 const PRODUCT_OPTIONS = {
@@ -34,14 +36,27 @@ export async function displayShoppingCartMenu(vendingMachine: VendingMachine) {
     .getCartData();
   const cartOptions: CartOption[] = [];
 
+  let totalPrice = 0;
+  let totalAmount = 0;
   for (const [id, amount] of cartData.entries()) {
     const productData = productCache.get(id);
     if (productData === undefined) {
       continue;
     }
+    const price = getDiscountedPrice(productData, amount);
+    totalPrice += price;
+    totalAmount += amount;
     cartOptions.push({
-      name: `${productData.product_name} : ${amount}`,
+      name: `${productData.product_name} (${amount}) ¥${price}`,
       value: id,
+    });
+  }
+  if (cartOptions.length > 0) {
+    cartOptions.push({
+      name: `${languageHandler.getTranslation(
+      "menu.shopping_cart.option.checkout",
+    )} (¥${totalPrice})`,
+      value: SHOPPING_CART_OPTIONS.CHECKOUT
     });
   }
 
@@ -50,12 +65,6 @@ export async function displayShoppingCartMenu(vendingMachine: VendingMachine) {
       message: languageHandler.getTranslation("menu.shopping_cart.prompt"),
       choices: [
         ...cartOptions,
-        {
-          name: languageHandler.getTranslation(
-            "menu.shopping_cart.option.checkout",
-          ),
-          value: SHOPPING_CART_OPTIONS.CHECKOUT,
-        },
         {
           name: languageHandler.getTranslation("menu.start.option.return"),
           value: SHOPPING_CART_OPTIONS.RETURN,
@@ -68,6 +77,19 @@ export async function displayShoppingCartMenu(vendingMachine: VendingMachine) {
     { clearPromptOnDone: true },
   );
   if (selectedOption === SHOPPING_CART_OPTIONS.RETURN) {
+    await displayStartMenu(vendingMachine);
+    return;
+  } else if (selectedOption === SHOPPING_CART_OPTIONS.CHECKOUT) {
+    const user = vendingMachine.getUser();
+    if (user.getBalance() < totalPrice) {
+      await displayErrorProceedMenu(languageHandler.getTranslation("menu.shopping_cart.insufficient_balance"));
+      await displayShoppingCartMenu(vendingMachine);
+      return;
+    }
+    if (!user.removeBalance(totalPrice) || !vendingMachine.getShoppingCart().checkoutProducts() || !setUserStatistics(user.getUserID(), totalAmount , totalPrice)) {
+      await displayErrorProceedMenu(languageHandler.getTranslation("menu.shopping_cart.check_out.error"))
+      return;
+    }
     await displayStartMenu(vendingMachine);
     return;
   }
@@ -91,12 +113,7 @@ async function selectCartItemMenu(
   const productAmount = cartData.getProductAmount(productId);
 
   const totalPrice = productAmount * productData.product_price;
-  const reducedPrice = Math.round(
-    totalPrice -
-      (productAmount >= productData.discount_condition
-        ? (totalPrice * productData.discount_amount) / 100
-        : 0),
-  );
+  const reducedPrice = getDiscountedPrice(productData, productAmount);
 
   const selectedOption = await select(
     {
@@ -139,9 +156,6 @@ export async function handleCartItemOption(
 ) {
   const shoppingCard = vendingMachine.getShoppingCart();
   switch (option) {
-    case PRODUCT_OPTIONS.RETURN:
-      await displayShoppingCartMenu(vendingMachine);
-      break;
     case PRODUCT_OPTIONS.ADD:
       if (productId === undefined) {
         await displayErrorProceedMenu(
@@ -160,11 +174,17 @@ export async function handleCartItemOption(
         );
         await displayShoppingCartMenu(vendingMachine);
       } else {
+        const productAmount = shoppingCard.getProductAmount(productId);
         shoppingCard.updateProduct(
           productId,
-          shoppingCard.getProductAmount(productId) - 1,
+          productAmount - 1,
         );
-        await selectCartItemMenu(vendingMachine, productId);
+        if (productAmount - 1 > 0) {
+          await selectCartItemMenu(vendingMachine, productId);
+          break;
+        } else {
+          await displayShoppingCartMenu(vendingMachine);
+        }
       }
       break;
     case PRODUCT_OPTIONS.REMOVE_ALL:
@@ -175,6 +195,9 @@ export async function handleCartItemOption(
       } else {
         shoppingCard.removeProduct(productId);
       }
+      await displayShoppingCartMenu(vendingMachine);
+      break;
+    case PRODUCT_OPTIONS.RETURN:
       await displayShoppingCartMenu(vendingMachine);
       break;
     default:
@@ -190,4 +213,14 @@ function getDiscountedString(before: number): string {
     .split("")
     .map((c) => c + strikeThrough)
     .join("");
+}
+
+function getDiscountedPrice(productData: ProductData, productAmount: number) {
+  const totalPrice = productAmount * productData.product_price;
+  return  Math.round(
+    totalPrice -
+      (productAmount >= productData.discount_condition
+        ? (totalPrice * productData.discount_amount) / 100
+        : 0),
+  );
 }

@@ -37,13 +37,13 @@ export class DatabaseInterface {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );`,
       `CREATE TABLE IF NOT EXISTS user_balances (
-        balance_id INTEGER PRIMARY KEY AUTOINCREMENT ,
-        user_id INTEGER NOT NULL UNIQUE REFERENCES user_data(user_id),
+        balance_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL UNIQUE REFERENCES user_data(user_id) ON DELETE CASCADE,
         balance INTEGER DEFAULT 10000 NOT NULL
       );`,
       `CREATE TABLE IF NOT EXISTS user_statistics (
-        statistic_id INTEGER PRIMARY KEY AUTOINCREMENT ,
-        user_id INTEGER NOT NULL UNIQUE REFERENCES user_data(user_id),
+        statistic_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL UNIQUE REFERENCES user_data(user_id) ON DELETE CASCADE,
         product_amount INTEGER DEFAULT 0 NOT NULL,
         spent_amount INTEGER DEFAULT 0 NOT NULL
       );`,
@@ -56,11 +56,14 @@ export class DatabaseInterface {
         discount_amount INTEGER DEFAULT 0 NOT NULL
       );`,
       `CREATE TABLE IF NOT EXISTS shopping_carts (
-        cart_id INTEGER PRIMARY KEY AUTOINCREMENT ,
-        user_id INTEGER NOT NULL REFERENCES user_data(user_id),
-        product_id INTEGER  NOT NULL REFERENCES product_data(product_id),
-        amount INTEGER NOT NULL DEFAULT 1,
-        UNIQUE (user_id, product_id)
+        cart_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL UNIQUE REFERENCES user_data(user_id) ON DELETE CASCADE
+      );`,
+      `CREATE TABLE IF NOT EXISTS shopping_cart_items (
+        cart_id INTEGER NOT NULL REFERENCES shopping_carts(cart_id) ON DELETE CASCADE,
+        product_id INTEGER NOT NULL REFERENCES product_data(product_id),
+        amount INTEGER NOT NULL DEFAULT 1 CHECK (amount > 0),
+        PRIMARY KEY (cart_id, product_id)
       );`,
       `
       CREATE TRIGGER IF NOT EXISTS create_user_defaults
@@ -69,6 +72,8 @@ export class DatabaseInterface {
           INSERT INTO user_balances (user_id)
           VALUES (NEW.user_id);
           INSERT INTO user_statistics (user_id)
+          VALUES (NEW.user_id);
+          INSERT INTO shopping_carts (user_id)
           VALUES (NEW.user_id);
       END;
       `,

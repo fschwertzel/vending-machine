@@ -6,6 +6,7 @@ import {
 } from "../utils/VendingMachine.ts";
 import { displayErrorProceedMenu } from "./ErrorMenu.ts";
 import { displayStartMenu } from "./StartMenu.ts";
+import { MAX_PRODUCT_AMOUNT } from "../utils/ShoppingCart.ts";
 
 export type ProductOption = {
   name: string;
@@ -84,6 +85,13 @@ async function selectProductCountMenu(
     { clearPromptOnDone: true },
   );
   if (productAmount <= 0) {
+    await displayProductMenu(vendingMachine);
+    return;
+  }
+  if (productAmount > MAX_PRODUCT_AMOUNT) {
+    await displayErrorProceedMenu(
+      getLanguageHandler().getTranslation("menu.products.too_large_amount"),
+    );
     await displayProductMenu(vendingMachine);
     return;
   }

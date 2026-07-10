@@ -28,8 +28,8 @@ export function setUserStatistics(
     VALUES (?, ?, ?)
     ON CONFLICT(user_id)
     DO UPDATE SET
-      product_amount = excluded.product_amount,
-      spent_amount = excluded.spent_amount;
+      product_amount = product_amount + excluded.product_amount,
+      spent_amount = spent_amount + excluded.spent_amount;
   `);
   return stmt.run(userId, productAmount, spentAmount).changes > 0;
 }

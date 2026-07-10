@@ -19,6 +19,8 @@
   "menu.error.prompt.y": "Yes",
   "menu.error.prompt.n": "No",
 
+  "menu.user_statistics.title" : "User statistics\n\n  Username │ Products Purchased │ Total Spent (¥)",
+
   "menu.products.prompt": "What would you like to buy? We've got.. everything. (•⩊•)",
   "menu.products.prompt.amount": "How much would you like to buy?",
   "menu.products.name": "Name",

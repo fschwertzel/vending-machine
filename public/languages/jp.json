@@ -13,6 +13,8 @@
   "menu.start.option.shopping_cart": "ショッピングカートを見る",
   "menu.start.option.user_statistics" : "ユーザー統計",
 
+  "menu.user_statistics.title" : "ユーザー統計\n\n  ユーザー名 │ 購入商品 │ 合計金額 (¥)",
+
   "menu.start.option.return": "↲ 戻る",
   "menu.error.prompt.q": "もう一度試してみますか？",
   "menu.error.prompt.p": "次へ",
